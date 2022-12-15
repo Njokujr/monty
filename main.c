@@ -1,51 +1,28 @@
-#define _GNU_SOURCE
-#include <stdio.h>
 #include "monty.h"
 
 /**
- * main - opens monty file and reads lines
- * @argc: number of arguments
- * @argv: array of arguments
- *
- * Return: 0 success, 1 failure
+ * main - The entry point function for Monty Interpreter.
+ * @ac: The number of arguments.
+ * @av: The pointer to an array of inputed arguments.
+ * Return: Always 0 (on Success).
  */
-
-int main(int argc, char *argv[])
+int main(int ac, char **av)
 {
-	FILE *fp;
-	ssize_t bytes_read;
-	size_t len = 0;
-	char *line = NULL;
-	char *token = NULL;
-	int line_number = 0;
-	stack_t *head = NULL;
+	FILE *fd = NULL;
+	int exit_status = EXIT_SUCCESS;
 
-	if (argc != 2)
-	{
-		printf("USAGE: monty file\n");
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		fp = fopen(argv[1], "r");
-		if (fp == NULL)
-		{
-			printf("Error: Can't open file %s\n", argv[1]);
-			exit(EXIT_FAILURE);
-		}
-		else
-		{
-			while ((bytes_read = getline(&line, &len, fp)) != -1)
-			{
-				line_number++;
-				token = get_tokens(line, line_number);
-				if (token != NULL)
-					get_func(token, &head, line_number);
-			}
-			free(line);
-			free_stack(head);
-			fclose(fp);
-		}
-	}
+	if (ac != 2)
+		return (usage_error(1));
+
+	fd = fopen(av[1], "r");
+	if (fd == NULL)
+		return (open_error(av[1]));
+
+	exit_status = monty_run(fd);
+	fclose(fd);
+	return (exit_status);
+		open_error(av[1]);
+	monty_run(fd);
+	exit(EXIT_SUCCESS);
 	return (0);
 }
